@@ -1,4 +1,4 @@
-wfs提供了thrift访问接口
+wfs提供了thrift访问接口   <p/>
   WfsPost()    //上传文件 <p/>
   wfsRead()    //拉取文件 <p/>
   wfsDel       //删除文件 <p/>
