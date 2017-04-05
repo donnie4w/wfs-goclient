@@ -1,7 +1,7 @@
 wfs提供了thrift访问接口
-  WfsPost()    //上传文件
-  wfsRead()    //拉取文件
-  wfsDel       //删除文件
+  WfsPost()    //上传文件 <p/>
+  wfsRead()    //拉取文件 <p/>
+  wfsDel       //删除文件 <p/>
 
 
    	bs, _ := ioutil.ReadFile(`1.jpg`)
