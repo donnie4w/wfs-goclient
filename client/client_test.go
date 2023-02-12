@@ -10,15 +10,15 @@ import (
 	"testing"
 )
 
-func _Test_post(t *testing.T) {
-	bs, _ := ioutil.ReadFile(`C:\Users\dong\Desktop\wfs\1.jpg`)
+func Test_post(t *testing.T) {
+	bs, _ := ioutil.ReadFile(`1.jpg`)
 	client := &WfsClient{"http://127.0.0.1:3434/thrift"}
-	client.PostFile(bs, "11", "")
+	client.PostFile(bs, "22", "")
 }
 
-func _Test_del(t *testing.T) {
+func Test_del(t *testing.T) {
 	client := &WfsClient{"http://127.0.0.1:3434/thrift"}
-	client.DelFile("1122")
+	client.DelFile("11")
 }
 
 func Test_read(t *testing.T) {

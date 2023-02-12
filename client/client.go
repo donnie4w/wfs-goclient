@@ -5,9 +5,11 @@
 package client
 
 import (
-	"git.apache.org/thrift.git/lib/go/thrift"
-	"github.com/donnie4w/go-logger/logger"
-	"github.com/donnie4w/wfs/httpserver/protocol"
+	"context"
+	"wfs-goclient/protocol"
+
+	"github.com/apache/thrift/lib/go/thrift"
+	"github.com/donnie4w/simplelog/logging"
 )
 
 type WfsClient struct {
@@ -18,21 +20,21 @@ func (this *WfsClient) PostFile(bs []byte, name, fileType string) (err error) {
 	protocolFactory := thrift.NewTCompactProtocolFactory()
 	transport, err := thrift.NewTHttpPostClient(this.ServerUrl)
 	if err != nil {
-		logger.Error("err:", err.Error())
+		logging.Error("err:", err.Error())
 	}
 	client := protocol.NewIWfsClientFactory(transport, protocolFactory)
 	if err := transport.Open(); err != nil {
-		logger.Error("err:", err.Error())
+		logging.Error("err:", err.Error())
 	}
 	defer transport.Close()
 	wf := protocol.NewWfsFile()
 	wf.FileBody = bs
 	wf.Name = &name
 	wf.FileType = &fileType
-	_, er := client.WfsPost(wf)
+	_, er := client.WfsPost(context.Background(), wf)
 	if er != nil {
 		err = er
-		logger.Debug("err:", err.Error())
+		logging.Debug("err:", err.Error())
 	}
 	return
 }
@@ -41,17 +43,17 @@ func (this *WfsClient) GetFile(name string) (bs []byte, err error) {
 	protocolFactory := thrift.NewTCompactProtocolFactory()
 	transport, err := thrift.NewTHttpPostClient(this.ServerUrl)
 	if err != nil {
-		logger.Error("err:", err.Error())
+		logging.Error("err:", err.Error())
 	}
 	client := protocol.NewIWfsClientFactory(transport, protocolFactory)
 	if err := transport.Open(); err != nil {
-		logger.Error("err:", err.Error())
+		logging.Error("err:", err.Error())
 	}
 	defer transport.Close()
-	wf, er := client.WfsRead(name)
+	wf, er := client.WfsRead(context.Background(), name)
 	if er == nil {
 		bs = wf.GetFileBody()
-		logger.Debug("len(bs):", len(bs))
+		logging.Debug("len(bs):", len(bs))
 	}
 	err = er
 	return
@@ -61,16 +63,16 @@ func (this *WfsClient) DelFile(name string) (err error) {
 	protocolFactory := thrift.NewTCompactProtocolFactory()
 	transport, err := thrift.NewTHttpPostClient(this.ServerUrl)
 	if err != nil {
-		logger.Error("err:", err.Error())
+		logging.Error("err:", err.Error())
 	}
 	client := protocol.NewIWfsClientFactory(transport, protocolFactory)
 	if err := transport.Open(); err != nil {
-		logger.Error("err:", err.Error())
+		logging.Error("err:", err.Error())
 	}
 	defer transport.Close()
-	ack, er := client.WfsDel(name)
+	ack, er := client.WfsDel(context.Background(), name)
 	if er == nil {
-		logger.Debug("ack:", ack)
+		logging.Debug("ack:", ack)
 	}
 	err = er
 	return
