@@ -1,4 +1,4 @@
-module wfs-goclient
+module github.com/donnie4w/wfs-goclient
 
 go 1.18
 

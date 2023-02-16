@@ -13,67 +13,50 @@ import (
 )
 
 type WfsClient struct {
-	ServerUrl string
+	transport thrift.TTransport
+	client    *protocol.IWfsClient
 }
 
-func (this *WfsClient) PostFile(bs []byte, name, fileType string) (err error) {
+func NewWfsClient(_serverUrl string) (wfsclient *WfsClient, err error) {
+	wfsclient = new(WfsClient)
 	protocolFactory := thrift.NewTCompactProtocolFactory()
-	transport, err := thrift.NewTHttpPostClient(this.ServerUrl)
+	wfsclient.transport, err = thrift.NewTHttpPostClient(_serverUrl)
 	if err != nil {
 		logging.Error("err:", err.Error())
 	}
-	client := protocol.NewIWfsClientFactory(transport, protocolFactory)
-	if err := transport.Open(); err != nil {
+	wfsclient.client = protocol.NewIWfsClientFactory(wfsclient.transport, protocolFactory)
+	if err = wfsclient.transport.Open(); err != nil {
 		logging.Error("err:", err.Error())
 	}
-	defer transport.Close()
+	return
+}
+
+func (this *WfsClient) Close() error {
+	return this.transport.Close()
+}
+
+func (this *WfsClient) PostFile(bs []byte, name, fileType string) (err error) {
 	wf := protocol.NewWfsFile()
-	wf.FileBody = bs
-	wf.Name = &name
-	wf.FileType = &fileType
-	_, er := client.WfsPost(context.Background(), wf)
-	if er != nil {
-		err = er
+	wf.FileBody, wf.Name, wf.FileType = bs, &name, &fileType
+	_, err = this.client.WfsPost(context.Background(), wf)
+	if err != nil {
 		logging.Debug("err:", err.Error())
 	}
 	return
 }
 
 func (this *WfsClient) GetFile(name string) (bs []byte, err error) {
-	protocolFactory := thrift.NewTCompactProtocolFactory()
-	transport, err := thrift.NewTHttpPostClient(this.ServerUrl)
-	if err != nil {
-		logging.Error("err:", err.Error())
-	}
-	client := protocol.NewIWfsClientFactory(transport, protocolFactory)
-	if err := transport.Open(); err != nil {
-		logging.Error("err:", err.Error())
-	}
-	defer transport.Close()
-	wf, er := client.WfsRead(context.Background(), name)
+	wf, er := this.client.WfsRead(context.Background(), name)
 	if er == nil {
 		bs = wf.GetFileBody()
-		logging.Debug("len(bs):", len(bs))
 	}
-	err = er
-	return
+	return bs, er
 }
 
 func (this *WfsClient) DelFile(name string) (err error) {
-	protocolFactory := thrift.NewTCompactProtocolFactory()
-	transport, err := thrift.NewTHttpPostClient(this.ServerUrl)
-	if err != nil {
-		logging.Error("err:", err.Error())
-	}
-	client := protocol.NewIWfsClientFactory(transport, protocolFactory)
-	if err := transport.Open(); err != nil {
-		logging.Error("err:", err.Error())
-	}
-	defer transport.Close()
-	ack, er := client.WfsDel(context.Background(), name)
+	ack, er := this.client.WfsDel(context.Background(), name)
 	if er == nil {
-		logging.Debug("ack:", ack)
+		logging.Info("DelFile[", name, "] and Ack:", ack.GetStatus())
 	}
-	err = er
-	return
+	return er
 }

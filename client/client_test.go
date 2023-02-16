@@ -5,28 +5,36 @@
 package client
 
 import (
-	"fmt"
 	"io/ioutil"
 	"testing"
+
+	"github.com/donnie4w/simplelog/logging"
 )
 
 func Test_post(t *testing.T) {
 	bs, _ := ioutil.ReadFile(`1.jpg`)
-	client := &WfsClient{"http://127.0.0.1:3434/thrift"}
-	client.PostFile(bs, "22", "")
+	client, err := NewWfsClient("http://127.0.0.1:3434/thrift")
+	defer client.Close()
+	err = client.PostFile(bs, "222", "")
+	logging.Debug(err)
+
 }
 
 func Test_del(t *testing.T) {
-	client := &WfsClient{"http://127.0.0.1:3434/thrift"}
-	client.DelFile("11")
+	client, err := NewWfsClient("http://127.0.0.1:3434/thrift")
+	defer client.Close()
+	err = client.DelFile("22")
+	logging.Debug(err)
 }
 
 func Test_read(t *testing.T) {
-	client := &WfsClient{"http://127.0.0.1:3434/thrift"}
-	bs, err := client.GetFile("11?imageView2/0/w/100")
+	client, err := NewWfsClient("http://127.0.0.1:3434/thrift")
+	defer client.Close()
+	var bs []byte
+	bs, err = client.GetFile("222?imageView2/0/w/100")
 	if err == nil {
-		fmt.Println(len(bs))
+		logging.Debug(len(bs))
 	} else {
-		fmt.Println("err:", err.Error())
+		logging.Error("err:", err.Error())
 	}
 }
