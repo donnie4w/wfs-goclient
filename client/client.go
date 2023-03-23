@@ -6,7 +6,6 @@ package client
 
 import (
 	"context"
-	"wfs-goclient/protocol"
 
 	"github.com/apache/thrift/lib/go/thrift"
 	"github.com/donnie4w/simplelog/logging"
@@ -14,7 +13,7 @@ import (
 
 type WfsClient struct {
 	transport thrift.TTransport
-	client    *protocol.IWfsClient
+	client    *IWfsClient
 }
 
 func NewWfsClient(_serverUrl string) (wfsclient *WfsClient, err error) {
@@ -24,7 +23,7 @@ func NewWfsClient(_serverUrl string) (wfsclient *WfsClient, err error) {
 	if err != nil {
 		logging.Error("err:", err.Error())
 	}
-	wfsclient.client = protocol.NewIWfsClientFactory(wfsclient.transport, protocolFactory)
+	wfsclient.client = NewIWfsClientFactory(wfsclient.transport, protocolFactory)
 	if err = wfsclient.transport.Open(); err != nil {
 		logging.Error("err:", err.Error())
 	}
@@ -36,7 +35,7 @@ func (this *WfsClient) Close() error {
 }
 
 func (this *WfsClient) PostFile(bs []byte, name, fileType string) (err error) {
-	wf := protocol.NewWfsFile()
+	wf := NewWfsFile()
 	wf.FileBody, wf.Name, wf.FileType = bs, &name, &fileType
 	_, err = this.client.WfsPost(context.Background(), wf)
 	if err != nil {

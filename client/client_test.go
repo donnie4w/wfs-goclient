@@ -12,9 +12,9 @@ import (
 )
 
 func Test_post(t *testing.T) {
-	bs, _ := ioutil.ReadFile(`1.jpg`)
 	client, err := NewWfsClient("http://127.0.0.1:3434/thrift")
 	defer client.Close()
+	bs, _ := ioutil.ReadFile(`1.jpg`)
 	err = client.PostFile(bs, "222", "")
 	logging.Debug(err)
 
