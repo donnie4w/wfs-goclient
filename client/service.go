@@ -125,31 +125,38 @@ func (t *Client) ping() (_r int8, _err error) {
 
 func (t *Client) auth0(wa *WfsAuth) (_r *WfsAck, _err error) {
 	defer _recover()
-	defer t.mux.Unlock()
 	t.mux.Lock()
+	defer t.mux.Unlock()
 	return t.Conn.Auth(context.TODO(), wa)
 }
 
 func (t *Client) Append(wf *WfsFile) (_r *WfsAck, _err error) {
 	defer _recover()
-	defer t.mux.Unlock()
 	t.mux.Lock()
+	defer t.mux.Unlock()
 	return t.Conn.Append(context.TODO(), wf)
 }
 
 func (t *Client) Delete(path string) (_r *WfsAck, _err error) {
 	defer _recover()
-	defer t.mux.Unlock()
 	t.mux.Lock()
+	defer t.mux.Unlock()
 	return t.Conn.Delete(context.TODO(), path)
+}
+
+func (t *Client) Rename(path, newPath string) (_r *WfsAck, _err error) {
+	defer _recover()
+	t.mux.Lock()
+	defer t.mux.Unlock()
+	return t.Conn.Rename(context.TODO(), path, newPath)
 }
 
 // Parameters:
 //   - Name
 func (t *Client) Get(path string) (_r *WfsData, _err error) {
 	defer _recover()
-	defer t.mux.Unlock()
 	t.mux.Lock()
+	defer t.mux.Unlock()
 	return t.Conn.Get(context.TODO(), path)
 }
 
