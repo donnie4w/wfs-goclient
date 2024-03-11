@@ -43,7 +43,19 @@ func Test_del(t *testing.T) {
 	}
 }
 
+func Test_rename(t *testing.T) {
+	if client, err := newclient(); err == nil {
+		if ack, err := client.Rename("test/111.jpeg","c9e8efcfcd.jpeg"); err == nil {
+			if !ack.Ok {
+				logging.Error(ack.Error.GetCode(), " >>", ack.Error.GetInfo())
+			} else {
+				logging.Debug("ok")
+			}
+		}
+	}
+}
+
 func newclient() (client *wfsclient.Client, err error) {
-	client, err = wfsclient.NewConnect(false, "127.0.0.1", 6802, "admin", "123")
+	client, err = wfsclient.NewConnect(true, "127.0.0.1", 6802, "admin", "123")
 	return
 }
