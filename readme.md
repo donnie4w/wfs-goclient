@@ -58,4 +58,19 @@
 		}
 	}
 
+重命名
+
+	func Test_rename(t *testing.T) {
+		if client, err := newclient(); err == nil {
+			if ack, err := client.Rename("test/111.jpeg","c9e8efcfcd.jpeg"); err == nil {
+				if !ack.Ok {
+					logging.Error(ack.Error.GetCode(), " >>", ack.Error.GetInfo())
+				} else {
+					logging.Debug("ok")
+				}
+			}
+		}
+	}
+
+
 
